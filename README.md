@@ -3,9 +3,10 @@
 - Student, Subject, Department classes 
 - Attendance tracking 
 - 75% eligibility criteria check 
-- Manu-Driven system
+- Menu-Driven system
 - Department-wise report 
 ## Tech Used 
-- Java 
+- Java
+## Concept 
 - OOP 
 - ArrayList, HashMap
