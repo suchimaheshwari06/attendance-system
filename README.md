@@ -6,7 +6,7 @@
 - Menu-Driven system
 - Department-wise report 
 ## Tech Used 
-- Java
+- Java 
 ## Concept 
 - OOP 
 - ArrayList, HashMap

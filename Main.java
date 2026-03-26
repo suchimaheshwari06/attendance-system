@@ -39,26 +39,30 @@ public class Main {
                     String name = sc.nextLine();
                     
                     //show department
-                    for (int i=0; i < departments.size(); i++) {
+                    for (int i=1; i <= departments.size(); i++) {
                         System.out.println(i + ". " + departments.get(i).getName());
                     }
                     System.out.println("Select Department: ");
+                    System.out.println("\nEnter Department Index: ");
                     int deptIndex = sc.nextInt();
-                    Department selectedDept = departments.get(deptIndex);
+                    Department selectedDept = departments.get(deptIndex); 
+                    //using department class object to get access to the list of department
 
-                    Student s = new Student(name, selectedDept);
-                    students.add(s);
-                    selectedDept.addStudent(s);
+                    Student s = new Student(name, selectedDept); //adding students in specified department 
+                    students.add(s); //added students to 'students' list 
+                    selectedDept.addStudent(s); //used dept object to add the students in specified dept 
 
-                    records.put(s, new ArrayList<>());
+                    records.put(s, new ArrayList<>()); 
 
                     System.out.println("Student added.");
                     break;
                 case 3: 
                     System.out.println("Enter Subject name: ");
                     String subName = sc.nextLine();
+
                     System.out.println("Total classes: ");
                     int total = sc.nextInt();
+                    
                     subjects.add(new Subject(subName, total));
                     
                     System.out.println("Subject added.");
