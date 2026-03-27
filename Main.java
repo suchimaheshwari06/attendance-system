@@ -21,7 +21,8 @@ public class Main {
         departments.add(new Department("CSD", 3));
         departments.add(new Department("AI", 4));
 
-        HashMap<Student, ArrayList<Attendance>> records = new HashMap<>();
+        HashMap<Student, ArrayList<Attendance>> records = new HashMap<>(); 
+        //A structure to store each student -> their full attendance history 
 
         int choice;
         do { 
@@ -46,11 +47,12 @@ public class Main {
                     for (int i=0; i < departments.size(); i++) {
                         System.out.println(i + ". " + departments.get(i).getName());
                     }
+                    //shows department with dept index 
                     System.out.println("Select Department: ");
                     System.out.println("\nEnter Department Index: ");
                     int deptIndex = sc.nextInt();
                     Department selectedDept = departments.get(deptIndex); 
-                    //using department class object to get access to the list of department
+                    //using department class object to get access to the list of departments
 
                     Student s = new Student(name, selectedDept); //adding students in specified department 
                     students.add(s); //added students to 'students' list 
@@ -69,17 +71,20 @@ public class Main {
                         ArrayList<Attendance> studentRecords = records.get(stu); 
                         
                         for(Subject sub : subjects ) {
-                            if (sub.getDeptIndex() == stu.getDepartment().getDeptIndex()) {
+                            if (sub.getDeptIndex() == stu.getDepartment().getDeptIndex()) { 
+                                //subject dept id must be equal to student's dept id 
                                 System.out.println("\nEnter attendance for " + stu.getName() + " in " + sub.getSubjectName());
                                 System.out.println("Classes Attended: ");
                                 int attended = sc.nextInt();
-                                studentRecords.add(new Attendance(stu, sub, attended));
+                                studentRecords.add(new Attendance(stu, sub, attended)); 
+                                //this list stores the students, subjects and their attendance per subject 
                             }
                         }
                     }
                     System.out.println("Attendance Marked.");
                     break;
                 case 3: 
+                //display student details 
                     System.out.println("\n-----Student Deets-----");
                     for (Department dept : departments ) {
                         System.out.println("\n-------------------------");
