@@ -3,7 +3,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        ArrayList<Student> students = new ArrayList<>();
+        ArrayList<Student> students = new ArrayList<>(); //<Students> -> <E> the type of elements in the list  
         ArrayList<Subject> subjects = new ArrayList<>();
 
         subjects.add(new Subject("COA", 72, 1));

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AttendTrack</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+<style>
+body {
+  padding: 2rem;
+  background: linear-gradient(135deg, #dbeafe, #e0f2fe, #f0fdf4);
+  font-family: sans-serif;
+}
+
+.card {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+button {
+  border-radius: 10px;
+}
+#messageBox {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: #d1fae5;
+  color: #065f46;
+  font-weight: 500;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+<div id="messageBox" class="hidden"></div>
+<main class="container">
+
+<h2>Dashboard</h2>
+<div class="grid">
+  <button onclick="showSection('addStudent')">Add Student</button>
+  <button onclick="showSection('attendance')">Mark Attendance</button>
+  <button onclick="showSection('report')">View Report</button>
+</div>
+
+<!-- ADD STUDENT -->
+<div id="addStudent" class="card hidden">
+  <h3>Add Student</h3>
+
+  <input id="studentName" placeholder="Name">
+
+  <select id="dept" onchange="loadSubjects()">
+    <option value="">Select Department</option>
+    <option value="1">CP</option>
+    <option value="2">IT</option>
+    <option value="3">CSD</option>
+    <option value="4">AI</option>
+  </select>
+
+  <button onclick="addStudent()">Add</button>
+</div>
+
+<!-- ATTENDANCE -->
+<div id="attendance" class="card hidden">
+  <h3>Mark Attendance</h3>
+
+  <select id="studentSelect" onchange="loadSubjectsForAttendance()"></select>
+
+  <div id="subjectsContainer"></div>
+
+  <button onclick="saveAttendance()">Save Attendance</button>
+</div>
+
+<!-- REPORT -->
+<div id="report" class="card hidden">
+  <h3>View Report</h3>
+
+  <select onchange="filterDept(this.value)">
+    <option value="all">All</option>
+    <option value="1">CP</option>
+    <option value="2">IT</option>
+    <option value="3">CSD</option>
+    <option value="4">AI</option>
+  </select>
+
+  <table id="reportTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Enrolment Number</th>
+        <th>Dept</th>
+        <th>Subject</th>
+        <th>%</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+</main>
+
+<script>
+let enrolCounter = 1000;
+let students = [];
+let attendanceRecords = [];
+
+const subjects = [
+  {name:"COA", total:72, dept:1},
+  {name:"OS", total:72, dept:1},
+  {name:"Seminar", total:48, dept:1},
+  {name:"DM", total:72, dept:1},
+  {name:"Java", total:72, dept:1},
+  {name:"TWS", total:48, dept:1},
+  {name:"ESS", total:72, dept:1}
+];
+
+function showSection(id){
+  document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function addStudent(){
+  const name = document.getElementById("studentName").value;
+  const dept = document.getElementById("dept").value;
+
+  if(!name || !dept){
+    alert("Please fill all fields");
+    return;
+  }
+
+  const enrol = ++enrolCounter;
+
+  students.push({name, dept, enrol});
+
+  const select = document.getElementById("studentSelect");
+  select.innerHTML += `<option value="${students.length-1}">
+    ${name} (${enrol})
+  </option>`;
+
+  showMessage("Student added successfully");
+}
+
+function loadSubjectsForAttendance(){
+  const index = document.getElementById("studentSelect").value;
+  const student = students[index];
+
+  let html = "";
+
+  subjects.forEach((sub, i) => {
+    if(sub.dept == student.dept){
+      html += `
+        <label>${sub.name}</label>
+        <input type="number" id="sub${i}" placeholder="Classes Attended" min="0" max="${sub.total}">
+      `;
+    }
+  });
+
+  document.getElementById("subjectsContainer").innerHTML = html;
+}
+
+function saveAttendance(){
+  const index = document.getElementById("studentSelect").value;
+  const student = students[index];
+
+  let updated = false;
+
+  subjects.forEach((sub, i) => {
+    if(sub.dept == student.dept){
+      const val = document.getElementById(`sub${i}`).value;
+
+      if(val){
+        if(val > sub.total) {
+            showMessage(`Max allowed for ${sub.name} is ${sub.total}`);
+            return;
+        }
+        
+        let percent = (val * 100) / sub.total;
+        let eligible = percent >= 75;
+
+        attendanceRecords.push({
+          name: student.name,
+          enrol: student.enrol,
+          dept: student.dept,
+          subject: sub.name,
+          percent: percent.toFixed(2),
+          status: eligible ? "Eligible" : "Not Eligible"
+        });
+
+        updated = true;
+      }
+    }
+  });
+
+  if(updated){
+    alert("Attendance updated");
+    renderTable();
+  } else {
+    showMessage("Attendance updated");
+  }
+}
+
+function renderTable(){
+  const tbody = document.querySelector("#reportTable tbody");
+  tbody.innerHTML = "";
+
+  attendanceRecords.forEach(r => {
+    tbody.innerHTML += `
+      <tr data-dept="${r.dept}">
+        <td>${r.name}</td>
+        <td>${r.enrol}</td>
+        <td>${r.dept}</td>
+        <td>${r.subject}</td>
+        <td>${r.percent}%</td>
+        <td>${r.status}</td>
+      </tr>
+    `;
+  });
+}
+
+function filterDept(dept){
+  document.querySelectorAll("#reportTable tbody tr").forEach(row => {
+    row.style.display = (dept==="all" || row.dataset.dept===dept) ? "" : "none";
+  });
+}
+function showMessage(msg){
+  const box = document.getElementById("messageBox");
+  box.innerText = msg;
+  box.classList.remove("hidden");
+
+  setTimeout(() => {
+    box.classList.add("hidden");
+  }, 3000);
+}
+</script>
+
+</body>
+</html>
